@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>管理后台 | ProjectAn01</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&amp;family=DM+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+</head>
+<body class="admin-body">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <span class="brand-mark">AN</span><span class="brand-text">01</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/admin}" class="sidebar-link active">
+                <i class="bi bi-speedometer2"></i><span>仪表盘</span>
+            </a>
+            <a th:href="@{/admin/products}" class="sidebar-link">
+                <i class="bi bi-box-seam"></i><span>商品管理</span>
+            </a>
+            <a th:href="@{/swagger-ui.html}" class="sidebar-link" target="_blank">
+                <i class="bi bi-braces"></i><span>API 文档</span>
+            </a>
+            <a th:href="@{/actuator/health}" class="sidebar-link" target="_blank">
+                <i class="bi bi-heart-pulse"></i><span>服务状态</span>
+            </a>
+            <a th:href="@{/h2-console}" class="sidebar-link" target="_blank">
+                <i class="bi bi-database"></i><span>数据库</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <h1 class="admin-page-title">仪表盘</h1>
+            <div class="admin-user">
+                <i class="bi bi-person-circle"></i>
+                <span sec:authentication="name">管理员</span>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <!-- KPI Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card kpi-primary">
+                        <div class="kpi-icon"><i class="bi bi-box-seam"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-value" th:text="${totalProducts}">0</div>
+                            <div class="kpi-label">商品总数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card kpi-success">
+                        <div class="kpi-icon"><i class="bi bi-people"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">--</div>
+                            <div class="kpi-label">用户总数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card kpi-warning">
+                        <div class="kpi-icon"><i class="bi bi-lightning-charge"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">Redis</div>
+                            <div class="kpi-label">缓存状态</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="kpi-card kpi-info">
+                        <div class="kpi-icon"><i class="bi bi-diagram-3"></i></div>
+                        <div class="kpi-body">
+                            <div class="kpi-value">Kafka</div>
+                            <div class="kpi-label">消息队列</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h5><i class="bi bi-box-seam me-2"></i>商品管理</h5>
+                            <a th:href="@{/admin/products}" class="btn btn-sm btn-accent">进入</a>
+                        </div>
+                        <p class="admin-card-desc">创建、编辑、删除商品，管理库存和分类。</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h5><i class="bi bi-braces me-2"></i>API 文档</h5>
+                            <a href="/swagger-ui.html" target="_blank" class="btn btn-sm btn-accent">查看</a>
+                        </div>
+                        <p class="admin-card-desc">Swagger UI 接口文档，支持在线调试。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/navbar :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>订单管理 | ProjectAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"/>
+    <style>
+        body { background: #f5f7fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding-top: 2rem; }
+        .content-wrapper { padding: 0 2rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .page-header { margin-bottom: 2rem; }
+        .page-title { font-size: 1.5rem; font-weight: 700; color: #1f2937; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card-header { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border-radius: 12px 12px 0 0 !important; padding: 1.25rem 1.5rem; border: none; }
+        .coming-soon { text-align: center; padding: 5rem 2rem; color: #94a3b8; }
+        .coming-soon .icon { font-size: 5rem; display: block; margin-bottom: 1.5rem; opacity: 0.5; }
+        .coming-soon h3 { color: #64748b; font-weight: 600; margin-bottom: 0.5rem; }
+        .coming-soon p { font-size: 0.95rem; }
+        .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; color: #6366f1; text-decoration: none; font-weight: 500; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .back-btn:hover { color: #4f46e5; }
+    </style>
+</head>
+<body>
+<div class="content-wrapper">
+    <a href="/dashboard" class="back-btn"><i class="bi bi-arrow-left"></i> 返回仪表板</a>
+    <div class="page-header">
+        <h1 class="page-title"><i class="bi bi-file-text me-2" style="color:#6366f1"></i>订单管理</h1>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>订单列表</h5>
+        </div>
+        <div class="card-body coming-soon">
+            <i class="bi bi-hourglass-split icon"></i>
+            <h3>功能开发中</h3>
+            <p>订单管理模块即将上线，敬请期待。</p>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+### Java ###
+# 编译产物
+*.class
+target/
+out/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Maven ###
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+gradle-app.setting
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+bin/
+*.launch
+.factorypath
+*.pydevproject
+.metadata
+
+### NetBeans ###
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+### VS Code ###
+.vscode/
+*.code-workspace
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+### Windows ###
+*.log
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+### Linux ###
+*~
+.fuse_hidden*
+.directory*
+.Trash-*
+.nfs*
+
+### Logs ###
+logs/
+*.log
+lombok.log
+
+### Package Files ###
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Application Properties ###
+application-*.properties
+application-*.yml
+application-*.yaml
+!application.properties
+!application.yml
+!application.yaml
+bootstrap-*.properties
+bootstrap-*.yml
+bootstrap-*.yaml
+!bootstrap.properties
+!bootstrap.yml
+!bootstrap.yaml
+
+### Environment & Secrets ###
+.env
+*.pem
+*.p12
+*.jks
+*.key
+*.crt
+secrets/
+credentials.json
+service-account.json
+application-secret.properties
+application-secret.yml
+
+### Docker ###
+docker-compose.override.yml
+Dockerfile-dev
+*.pid
+
+### Spring Boot ###
+!.mvn/wrapper/maven-wrapper.jar
+!!.mvn/wrapper/maven-wrapper.properties
+HELP.md
+spring-boot-devtools.properties
+spring-boot-devtools.yaml
+spring-boot-devtools.yml
+
+### Test Coverage ###
+test-coverage/
+.test/
+jacoco.exec
+coverage/
+.nyc_output/
+
+### Temp Files ###
+*.tmp
+*.temp
+*~
+
+### IDE ###
+.history/
+.idea_modules/
+*.hprof
+*.orig
+*.releaseBackup

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- 顶部栏片段 -->
+<div th:fragment="topbar" class="topbar">
+    <div class="topbar-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebarBtn" title="切换菜单">
+            <i class="bi bi-list"></i>
+        </button>
+        <h1 class="topbar-title">ProjectAN</h1>
+    </div>
+    <div class="topbar-right">
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div class="user-details">
+                <div class="user-name" id="userName" sec:authentication="name">用户</div>
+                <div class="user-role">管理员</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="退出登录">
+            <i class="bi bi-box-arrow-right"></i>
+        </button>
+    </div>
+</div>
+
+</html>
+

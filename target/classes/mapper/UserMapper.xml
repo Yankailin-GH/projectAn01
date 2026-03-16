@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.an.mapper.UserMapper">
+
+    <!-- 含角色的结果映射 -->
+    <resultMap id="UserWithRoles" type="com.an.entity.User">
+        <id     column="id"               property="id"/>
+        <result column="username"         property="username"/>
+        <result column="email"            property="email"/>
+        <result column="password"         property="password"/>
+        <result column="full_name"        property="fullName"/>
+        <result column="phone"            property="phone"/>
+        <result column="avatar_url"       property="avatarUrl"/>
+        <result column="enabled"          property="enabled"/>
+        <result column="account_non_locked" property="accountNonLocked"/>
+        <result column="created_at"       property="createdAt"/>
+        <result column="updated_at"       property="updatedAt"/>
+        <result column="deleted"          property="deleted"/>
+        <collection property="roles" ofType="com.an.entity.Role">
+            <id     column="r_id"   property="id"/>
+            <result column="r_name" property="name"/>
+            <result column="r_code" property="code"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByUsernameWithRoles" resultMap="UserWithRoles">
+        SELECT u.*,
+               r.id   AS r_id,
+               r.name AS r_name,
+               r.code AS r_code
+        FROM sys_users u
+        LEFT JOIN sys_user_roles ur ON u.id = ur.user_id
+        LEFT JOIN sys_roles r       ON ur.role_id = r.id
+        WHERE u.username = #{username}
+          AND u.deleted = 0
+    </select>
+
+    <select id="searchUsers" resultType="com.an.entity.User">
+        SELECT * FROM sys_users
+        WHERE deleted = 0
+          AND (
+              username LIKE CONCAT('%', #{keyword}, '%')
+           OR email    LIKE CONCAT('%', #{keyword}, '%')
+           OR full_name LIKE CONCAT('%', #{keyword}, '%')
+          )
+    </select>
+
+</mapper>
+

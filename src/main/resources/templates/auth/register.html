@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>注册 | ProjectAn01</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/logo.svg}">
+    <meta name="theme-color" content="#3498db">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .register-wrapper {
+            text-align: center;
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,.1);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* ---- 动物容器 ---- */
+        .animals-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .animal {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .animal.bear {
+            background: #c9956f;
+            border-radius: 16px;
+        }
+        .animal.bear::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 20px;
+            height: 20px;
+            background: #c9956f;
+            border-radius: 50%;
+            left: 8px;
+        }
+        .animal.bear::after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            width: 20px;
+            height: 20px;
+            background: #c9956f;
+            border-radius: 50%;
+            right: 8px;
+        }
+
+        .animal.cat {
+            background: #ff9f43;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+        }
+        .animal.cat::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 0 solid transparent;
+            border-bottom: 18px solid #ff9f43;
+        }
+        .animal.cat::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: 10px;
+            width: 0;
+            height: 0;
+            border-right: 10px solid transparent;
+            border-left: 0 solid transparent;
+            border-bottom: 18px solid #ff9f43;
+        }
+
+        .animal.frog {
+            background: #1abc9c;
+            border-radius: 14px;
+        }
+        .animal.frog::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 8px;
+            width: 16px;
+            height: 16px;
+            background: #1abc9c;
+            border-radius: 50%;
+        }
+        .animal.frog::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            background: #1abc9c;
+            border-radius: 50%;
+        }
+
+        .eyes-wrapper {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .eye {
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #333;
+            border-radius: 50%;
+            transition: transform 0.05s ease;
+        }
+
+        .eyes-closed .pupil {
+            width: 10px;
+            height: 2px;
+            background: #333;
+            border-radius: 1px;
+        }
+
+        .nose {
+            width: 8px;
+            height: 8px;
+            background: #333;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ---- 注册框 ---- */
+        .register-card h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .register-subtitle {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .register-subtitle a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .register-subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        .input-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #bbb;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            margin-top: 8px;
+        }
+
+        .register-btn:hover { background: #2980b9; }
+        .register-btn:active { transform: scale(0.98); }
+        .register-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+        .alert {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .alert-danger {
+            background: #ffe5e5;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        .alert-success {
+            background: #e5ffe5;
+            color: #27ae60;
+            border: 1px solid #2ecc71;
+        }
+
+        .pwd-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            font-size: 16px;
+        }
+
+        .pwd-toggle:hover {
+            color: #3498db;
+        }
+
+        @media (max-width: 480px) {
+            .register-wrapper {
+                padding: 30px 20px;
+            }
+            .animals-container {
+                gap: 15px;
+            }
+            .animal {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-wrapper">
+    <!-- 方块动物们 -->
+    <div class="animals-container">
+        <div class="animal bear">
+            <div class="eyes-wrapper">
+                <div class="eye"><div class="pupil"></div></div>
+                <div class="eye"><div class="pupil"></div></div>
+            </div>
+            <div class="nose"></div>
+        </div>
+        <div class="animal cat">
+            <div class="eyes-wrapper">
+                <div class="eye"><div class="pupil"></div></div>
+                <div class="eye"><div class="pupil"></div></div>
+            </div>
+            <div class="nose"></div>
+        </div>
+        <div class="animal frog">
+            <div class="eyes-wrapper">
+                <div class="eye"><div class="pupil"></div></div>
+                <div class="eye"><div class="pupil"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册框 -->
+    <div class="register-card">
+        <h2>创建账号</h2>
+        <p class="register-subtitle">已有账号？<a th:href="@{/auth/login}">立即登录</a></p>
+
+        <div id="alertBox"></div>
+
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="input-group">
+                <label for="username">用户名 <span style="color: #e74c3c;">*</span></label>
+                <input type="text" id="username" placeholder="3-50个字符" required>
+            </div>
+            <div class="input-group">
+                <label for="email">邮箱 <span style="color: #e74c3c;">*</span></label>
+                <input type="email" id="email" placeholder="your@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="fullName">真实姓名</label>
+                <input type="text" id="fullName" placeholder="可选">
+            </div>
+            <div class="input-group">
+                <label for="regPassword">密码 <span style="color: #e74c3c;">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="regPassword" placeholder="至少6个字符" required>
+                    <button type="button" class="pwd-toggle" id="toggleRegPwd">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="confirmPassword">确认密码 <span style="color: #e74c3c;">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="confirmPassword" placeholder="再次输入密码" required>
+                    <button type="button" class="pwd-toggle" id="toggleConfirmPwd">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="register-btn" id="registerBtn">注 册</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// =============================================
+// 眼睛跟随鼠标
+// =============================================
+document.addEventListener('mousemove', (e) => {
+    const eyes = document.querySelectorAll('.eye');
+    const pwdInputs = [document.getElementById('regPassword'), document.getElementById('confirmPassword')];
+    const isFocused = pwdInputs.some(input => document.activeElement === input);
+    
+    eyes.forEach(eye => {
+        const eyesWrapper = eye.parentElement;
+        const animal = eyesWrapper.closest('.animal');
+        
+        if (isFocused) {
+            animal.classList.add('eyes-closed');
+            return;
+        } else {
+            animal.classList.remove('eyes-closed');
+        }
+
+        const rect = eye.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+
+        const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+        const distance = 6;
+
+        const pupilX = Math.cos(angle) * distance;
+        const pupilY = Math.sin(angle) * distance;
+
+        const pupil = eye.querySelector('.pupil');
+        pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+    });
+});
+
+// 密码框事件
+const pwdInputs = [document.getElementById('regPassword'), document.getElementById('confirmPassword')];
+pwdInputs.forEach(input => {
+    input.addEventListener('focus', () => {
+        document.querySelectorAll('.animal').forEach(a => a.classList.add('eyes-closed'));
+    });
+    input.addEventListener('blur', () => {
+        document.querySelectorAll('.animal').forEach(a => a.classList.remove('eyes-closed'));
+    });
+});
+
+// =============================================
+// 密码显示/隐藏
+// =============================================
+const toggleRegPwd = document.getElementById('toggleRegPwd');
+const regPwdField = document.getElementById('regPassword');
+toggleRegPwd.addEventListener('click', (e) => {
+    e.preventDefault();
+    const isPassword = regPwdField.type === 'password';
+    regPwdField.type = isPassword ? 'text' : 'password';
+    toggleRegPwd.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+});
+
+const toggleConfirmPwd = document.getElementById('toggleConfirmPwd');
+const confirmPwdField = document.getElementById('confirmPassword');
+toggleConfirmPwd.addEventListener('click', (e) => {
+    e.preventDefault();
+    const isPassword = confirmPwdField.type === 'password';
+    confirmPwdField.type = isPassword ? 'text' : 'password';
+    toggleConfirmPwd.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+});
+
+// =============================================
+// 注册表单提交
+// =============================================
+function showAlert(message, type = 'danger') {
+    const box = document.getElementById('alertBox');
+    box.className = `alert alert-${type}`;
+    box.innerHTML = `<i class="bi bi-${type === 'danger' ? 'exclamation-circle' : 'check-circle'} me-2"></i>${message}`;
+    box.style.display = 'block';
+    setTimeout(() => box.style.display = 'none', 5000);
+}
+
+async function handleRegister(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const fullName = document.getElementById('fullName').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (!username || !email || !password || !confirmPassword) {
+        showAlert('请填写所有必填项', 'danger');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showAlert('两次密码不一致', 'danger');
+        return;
+    }
+
+    if (password.length < 6) {
+        showAlert('密码至少6个字符', 'danger');
+        return;
+    }
+
+    const btn = document.getElementById('registerBtn');
+    btn.disabled = true;
+    btn.textContent = '注册中...';
+
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password, confirmPassword, fullName })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showAlert('注册成功，跳转到登录页...', 'success');
+            setTimeout(() => {
+                window.location.href = '/auth/login?registered=true';
+            }, 1500);
+        } else {
+            showAlert(result.message || '注册失败', 'danger');
+        }
+    } catch (err) {
+        showAlert('网络错误，请稍后重试', 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '注 册';
+    }
+}
+</script>
+
+</body>
+</html>

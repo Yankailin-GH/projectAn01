@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.an.mapper.ProductMapper">
+
+    <!-- 含分类的结果映射 -->
+    <resultMap id="ProductWithCategory" type="com.an.entity.Product">
+        <id     column="id"          property="id"/>
+        <result column="name"        property="name"/>
+        <result column="description" property="description"/>
+        <result column="price"       property="price"/>
+        <result column="stock"       property="stock"/>
+        <result column="image_url"   property="imageUrl"/>
+        <result column="sku"         property="sku"/>
+        <result column="status"      property="status"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="created_at"  property="createdAt"/>
+        <result column="updated_at"  property="updatedAt"/>
+        <result column="deleted"     property="deleted"/>
+        <association property="category" javaType="com.an.entity.Category">
+            <id     column="cat_id"   property="id"/>
+            <result column="cat_name" property="name"/>
+        </association>
+    </resultMap>
+
+    <select id="selectProductPage" resultMap="ProductWithCategory">
+        SELECT p.*,
+               c.id   AS cat_id,
+               c.name AS cat_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id AND c.deleted = 0
+        WHERE p.deleted = 0
+          AND p.status = #{status}
+        ORDER BY p.created_at DESC
+    </select>
+
+    <select id="searchProducts" resultMap="ProductWithCategory">
+        SELECT p.*,
+               c.id   AS cat_id,
+               c.name AS cat_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id AND c.deleted = 0
+        WHERE p.deleted = 0
+          AND p.status = 'ACTIVE'
+          AND (
+              p.name        LIKE CONCAT('%', #{keyword}, '%')
+           OR p.description LIKE CONCAT('%', #{keyword}, '%')
+          )
+        ORDER BY p.created_at DESC
+    </select>
+
+</mapper>
+

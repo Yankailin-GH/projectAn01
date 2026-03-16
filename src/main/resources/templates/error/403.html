@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>403 · 无权访问</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f; --surface: #12121a; --border: #1e1e2e;
+            --text: #e2e8f0; --muted: #64748b;
+            --accent: #ef4444; --accent2: #f97316;
+        }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; overflow: hidden; position: relative;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(239,68,68,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(239,68,68,0.04) 1px, transparent 1px);
+            background-size: 40px 40px; pointer-events: none;
+        }
+        body::after {
+            content: ''; position: fixed; top: 20%; left: 50%;
+            transform: translateX(-50%); width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(239,68,68,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .container { position: relative; z-index: 1; text-align: center; padding: 2rem; max-width: 600px; }
+        .error-code {
+            font-size: clamp(7rem, 20vw, 12rem); font-weight: 700;
+            line-height: 1; letter-spacing: -0.04em;
+            background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #fbbf24 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; user-select: none;
+        }
+        .emoji { font-size: 4rem; display: inline-block; margin: 1.5rem 0;
+            animation: shake 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(239,68,68,0.5)); }
+        @keyframes shake {
+            0%, 100% { transform: rotate(-5deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+        .title { font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+        .subtitle { font-size: 1rem; color: var(--muted); line-height: 1.7; margin-bottom: 2.5rem; }
+        .actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.75rem;
+            border-radius: 10px; font-size: 0.95rem; font-weight: 500; font-family: inherit;
+            text-decoration: none; cursor: pointer; border: none; transition: all 0.2s ease; }
+        .btn-primary { background: linear-gradient(135deg, #ef4444, #f97316); color: #fff;
+            box-shadow: 0 4px 20px rgba(239,68,68,0.35); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(239,68,68,0.5); }
+        .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="error-code">403</div>
+    <div class="emoji">🚫</div>
+    <h1 class="title">访问被拒绝</h1>
+    <p class="subtitle">
+        你没有权限访问这个页面，<br>
+        请联系管理员获取相应权限。
+    </p>
+    <div class="actions">
+        <a href="/dashboard" class="btn btn-primary">🏠 返回仪表板</a>
+        <button onclick="history.back()" class="btn btn-secondary">← 返回上一页</button>
+    </div>
+</div>
+</body>
+</html>

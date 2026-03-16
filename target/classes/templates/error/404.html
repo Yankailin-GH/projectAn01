@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>404 · 迷路了</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --border: #1e1e2e;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --accent: #6366f1;
+            --accent2: #a78bfa;
+            --glow: rgba(99,102,241,0.15);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 背景网格 */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* 光晕 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+        }
+
+        /* 大号 404 */
+        .error-code {
+            font-size: clamp(7rem, 20vw, 12rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, #f0abfc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            user-select: none;
+        }
+
+        .error-code::after {
+            content: '404';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, #f0abfc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(40px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        /* 小太空人动画 */
+        .astronaut {
+            font-size: 4rem;
+            display: inline-block;
+            animation: float 4s ease-in-out infinite;
+            margin: 1.5rem 0;
+            filter: drop-shadow(0 0 20px rgba(99,102,241,0.5));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50%       { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.5);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+
+        /* 路径提示 */
+        .path-hint {
+            margin-top: 2.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+        }
+
+        .path-hint span {
+            color: #f87171;
+        }
+
+        /* 星星 */
+        .stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--d, 3s) ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50%       { opacity: var(--o, 0.6); transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 星空背景 -->
+<div class="stars" id="stars"></div>
+
+<div class="container">
+    <div class="error-code">404</div>
+
+    <div class="astronaut">🧑‍🚀</div>
+
+    <h1 class="title">页面迷失在宇宙中了</h1>
+    <p class="subtitle">
+        你访问的页面不存在，也许它从未存在过，<br>
+        或者只是在另一个维度漂流。
+    </p>
+
+    <div class="actions">
+        <a href="/dashboard" class="btn btn-primary">
+            🏠 返回仪表板
+        </a>
+        <button onclick="history.back()" class="btn btn-secondary">
+            ← 返回上一页
+        </button>
+    </div>
+
+    <div class="path-hint">
+        <span>404</span> &nbsp;/&nbsp; <span th:text="${#request.requestURI}" id="currentPath">未知路径</span>
+    </div>
+</div>
+
+<script>
+    // 生成星空
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2.5 + 0.5;
+        star.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            --d: ${(Math.random() * 3 + 2).toFixed(1)}s;
+            --o: ${(Math.random() * 0.5 + 0.3).toFixed(2)};
+            animation-delay: ${(Math.random() * 4).toFixed(1)}s;
+        `;
+        starsEl.appendChild(star);
+    }
+
+    // 显示当前路径
+    const pathEl = document.getElementById('currentPath');
+    if (pathEl && !pathEl.textContent.trim()) {
+        pathEl.textContent = window.location.pathname;
+    }
+</script>
+</body>
+</html>

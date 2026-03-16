@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg sticky-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <span class="brand-mark">AN</span><span class="brand-text">01</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/products}">商品</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin}">管理后台</a>
+                </li>
+            </ul>
+            <form class="d-flex me-3" th:action="@{/products}" method="get">
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input class="form-control" type="search" name="keyword" placeholder="搜索商品..."/>
+                </div>
+            </form>
+            <div sec:authorize="isAnonymous()">
+                <a th:href="@{/auth/login}" class="btn btn-outline-light btn-sm me-2">登录</a>
+                <a th:href="@{/auth/register}" class="btn btn-accent btn-sm">注册</a>
+            </div>
+            <div sec:authorize="isAuthenticated()" class="dropdown">
+                <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span sec:authentication="name">用户</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" th:href="@{/user/profile}"><i class="bi bi-person me-2"></i>个人资料</a></li>
+                    <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin}"><i class="bi bi-speedometer2 me-2"></i>管理后台</a></li>
+                    <li><hr class="dropdown-divider"/></li>
+                    <li>
+                        <form th:action="@{/auth/logout}" method="post" style="margin:0">
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i>退出登录
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<footer th:fragment="footer" class="site-footer">
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                <div class="footer-brand">
+                    <span class="brand-mark">AN</span><span class="brand-text">01</span>
+                </div>
+                <p class="footer-desc">企业级全栈应用平台，基于 Spring Boot + Thymeleaf 构建。</p>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="footer-title">技术栈</h6>
+                <ul class="footer-links">
+                    <li><a href="#">Spring Boot 3</a></li>
+                    <li><a href="#">Spring Security + JWT</a></li>
+                    <li><a href="#">Spring Data JPA</a></li>
+                    <li><a href="#">Thymeleaf</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h6 class="footer-title">快速链接</h6>
+                <ul class="footer-links">
+                    <li><a th:href="@{/swagger-ui.html}">API 文档</a></li>
+                    <li><a th:href="@{/actuator/health}">服务状态</a></li>
+                    <li><a th:href="@{/h2-console}">数据库控制台</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="footer-hr"/>
+        <p class="footer-copy">&copy; 2026 ProjectAn01. 保留所有权利。</p>
+    </div>
+</footer>
+</body>
+</html>

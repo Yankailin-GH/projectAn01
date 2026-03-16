@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜单管理 | ProjectAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin-common.css}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部栏 -->
+        <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+        <!-- 侧边栏 -->
+        <aside th:replace="~{fragments/sidebar :: sidebar(activePage='menus')}"></aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content" id="mainContent">
+            <div class="content-wrapper">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2 class="page-title">
+                        <i class="bi bi-list-ul"></i>
+                        菜单管理
+                    </h2>
+                    <div class="page-actions">
+                        <a href="/dashboard" class="btn-back">
+                            <i class="bi bi-arrow-left"></i>
+                            返回
+                        </a>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            新增菜单
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 菜单列表卡片 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 搜索栏 -->
+                        <div class="search-bar">
+                            <input type="text" class="search-input" id="searchInput" placeholder="搜索菜单名称...">
+                            <button class="btn btn-primary" onclick="searchMenus()">
+                                <i class="bi bi-search me-2"></i>
+                                搜索
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetSearch()">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                                重置
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>菜单名称</th>
+                                        <th>路径</th>
+                                        <th>图标</th>
+                                        <th>类型</th>
+                                        <th>排序</th>
+                                        <th>权限标识</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menuTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 分页信息和导航 -->
+                        <div class="pagination-wrapper">
+                            <div class="pagination-info" id="paginationInfo">
+                                <span class="text-muted">加载中...</span>
+                            </div>
+                            <nav aria-label="分页导航">
+                                <ul class="pagination" id="pagination">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新增/编辑菜单模态框 -->
+    <div class="modal fade" id="menuModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">新增菜单</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="menuForm">
+                        <input type="hidden" id="menuId">
+                        <div class="mb-3">
+                            <label class="form-label">菜单名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" required placeholder="例如：用户管理">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">菜单类型 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="type" onchange="toggleMenuFields()">
+                                <option value="1">菜单</option>
+                                <option value="2">按钮</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="pathGroup">
+                            <label class="form-label">路由路径</label>
+                            <input type="text" class="form-control" id="path" placeholder="例如：/admin/users">
+                        </div>
+                        <div class="mb-3" id="iconGroup">
+                            <label class="form-label">图标</label>
+                            <input type="hidden" id="icon">
+                            <!-- 图标预览和选择触发器 -->
+                            <div class="icon-selector" onclick="openIconPicker()">
+                                <span class="icon-preview" id="iconPreview">
+                                    <i class="bi bi-image text-muted"></i>
+                                </span>
+                                <span class="icon-name" id="iconName">点击选择图标</span>
+                                <i class="bi bi-chevron-down ms-auto text-muted"></i>
+                            </div>
+                            <!-- 图标选择面板 -->
+                            <div class="icon-picker" id="iconPicker">
+                                <div class="icon-picker-search">
+                                    <input type="text" id="iconSearchInput" placeholder="搜索图标名称..."
+                                           oninput="filterIcons(this.value)">
+                                </div>
+                                <div class="icon-grid" id="iconGrid"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">权限标识</label>
+                            <input type="text" class="form-control" id="permission" placeholder="例如：user:view">
+                        </div>
+                        <div class="mb-3" id="componentGroup">
+                            <label class="form-label">组件路径</label>
+                            <input type="text" class="form-control" id="component" placeholder="例如：/admin/users">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">父菜单ID</label>
+                            <input type="number" class="form-control" id="parentId" placeholder="留空表示顶级菜单">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">排序 <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="sortOrder" value="0" required>
+                            <small class="text-muted">数字越小越靠前</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMenu()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/admin-common.js}"></script>
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+        let menuModal;
+        let isEditMode = false;
+        let currentKeyword = '';
+        let totalRecords = 0;
+        let totalPages = 0;
+
+        // 初始化模态框
+        document.addEventListener('DOMContentLoaded', function() {
+            menuModal = new bootstrap.Modal(document.getElementById('menuModal'));
+            loadMenus(1);
+        });
+
+        // 切换菜单字段显示
+        function toggleMenuFields() {
+            const type = document.getElementById('type').value;
+            const isMenu = type === '1';
+            
+            document.getElementById('pathGroup').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('iconGroup').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('componentGroup').style.display = isMenu ? 'block' : 'none';
+        }
+
+        // ==================== 图标选择器 ====================
+        const ICONS = [
+            'house','house-fill','speedometer2','people','people-fill','person','person-fill',
+            'person-circle','person-badge','shield-check','shield-fill-check','shield-lock',
+            'list-ul','list-check','list-nested','menu-app','grid','grid-fill','grid-3x3-gap',
+            'gear','gear-fill','gear-wide','gear-wide-connected','tools','wrench','sliders',
+            'box-seam','box-seam-fill','boxes','bag','bag-fill','cart','cart-fill','shop',
+            'shop-window','storefront','tag','tags','bookmark','bookmark-fill','star','star-fill',
+            'heart','heart-fill','bell','bell-fill','chat','chat-fill','envelope','envelope-fill',
+            'telephone','telephone-fill','calendar','calendar-fill','clock','clock-fill',
+            'search','zoom-in','zoom-out','funnel','filter','sort-down','sort-up',
+            'file','file-fill','file-text','file-earmark','folder','folder-fill','folder-open',
+            'cloud','cloud-fill','cloud-upload','cloud-download','download','upload',
+            'check-circle','check-circle-fill','x-circle','x-circle-fill','exclamation-circle',
+            'info-circle','info-circle-fill','question-circle','question-circle-fill',
+            'plus-circle','plus-circle-fill','dash-circle','dash-circle-fill',
+            'pencil','pencil-fill','pencil-square','trash','trash-fill','trash3',
+            'eye','eye-fill','eye-slash','lock','lock-fill','unlock','unlock-fill','key','key-fill',
+            'graph-up','graph-down','bar-chart','bar-chart-fill','pie-chart','pie-chart-fill',
+            'table','layout-text-sidebar','layout-sidebar','columns','columns-gap',
+            'image','image-fill','images','camera','camera-fill','mic','mic-fill',
+            'play','play-fill','pause','pause-fill','stop','stop-fill','music-note',
+            'wifi','wifi-off','bluetooth','usb','cpu','memory','hdd','server',
+            'globe','globe2','map','map-fill','pin','pin-fill','geo','geo-fill',
+            'truck','car-front','bicycle','airplane','rocket','rocket-takeoff',
+            'currency-dollar','currency-exchange','credit-card','credit-card-fill','wallet',
+            'award','award-fill','trophy','trophy-fill','patch-check','patch-star',
+            'braces','code','code-slash','terminal','bug','bug-fill','clipboard','clipboard-fill',
+            'broadcast','cast','display','laptop','phone','tablet','watch','headset',
+            'newspaper','book','book-fill','journal','journal-fill','bookmarks',
+            'layers','stack','collection','archive','inbox','send','reply','forward'
+        ];
+
+        let allIcons = [...ICONS];
+
+        function openIconPicker() {
+            const picker = document.getElementById('iconPicker');
+            const isOpen = picker.classList.contains('open');
+            if (!isOpen) {
+                renderIconGrid(allIcons);
+                picker.classList.add('open');
+                document.getElementById('iconSearchInput').value = '';
+                document.getElementById('iconSearchInput').focus();
+            } else {
+                picker.classList.remove('open');
+            }
+        }
+
+        function renderIconGrid(icons) {
+            const grid = document.getElementById('iconGrid');
+            const currentIcon = document.getElementById('icon').value;
+            grid.innerHTML = icons.map(name => `
+                <div class="icon-item ${name === currentIcon ? 'selected' : ''}" 
+                     onclick="selectIcon('${name}')" title="${name}">
+                    <i class="bi bi-${name}"></i>
+                    <span>${name}</span>
+                </div>
+            `).join('');
+        }
+
+        function filterIcons(keyword) {
+            const filtered = keyword
+                ? ICONS.filter(name => name.includes(keyword.toLowerCase()))
+                : ICONS;
+            renderIconGrid(filtered);
+        }
+
+        function selectIcon(name) {
+            document.getElementById('icon').value = name;
+            document.getElementById('iconPreview').innerHTML = `<i class="bi bi-${name}"></i>`;
+            document.getElementById('iconName').textContent = name;
+            document.getElementById('iconPicker').classList.remove('open');
+            // 更新选中状态
+            document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('selected'));
+        }
+
+        function clearIcon() {
+            document.getElementById('icon').value = '';
+            document.getElementById('iconPreview').innerHTML = `<i class="bi bi-image text-muted"></i>`;
+            document.getElementById('iconName').textContent = '点击选择图标';
+            document.getElementById('iconPicker').classList.remove('open');
+        }
+
+        // 点击外部关闭图标选择器
+        document.addEventListener('click', function(e) {
+            const picker = document.getElementById('iconPicker');
+            const selector = document.querySelector('.icon-selector');
+            if (picker && selector && !picker.contains(e.target) && !selector.contains(e.target)) {
+                picker.classList.remove('open');
+            }
+        });
+
+        // 设置图标（用于编辑时回显）
+        function setIconValue(iconName) {
+            document.getElementById('icon').value = iconName || '';
+            if (iconName) {
+                document.getElementById('iconPreview').innerHTML = `<i class="bi bi-${iconName}"></i>`;
+                document.getElementById('iconName').textContent = iconName;
+            } else {
+                document.getElementById('iconPreview').innerHTML = `<i class="bi bi-image text-muted"></i>`;
+                document.getElementById('iconName').textContent = '点击选择图标';
+            }
+        }
+
+        // 加载菜单列表
+        function loadMenus(page = 1, keyword = '') {
+            currentPage = page;
+            currentKeyword = keyword;
+            const token = localStorage.getItem('token');
+            let url = `/api/admin/menus?page=${page}&size=${pageSize}`;
+            if (keyword) {
+                url += `&keyword=${encodeURIComponent(keyword)}`;
+            }
+            
+            fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    totalRecords = data.data.total;
+                    totalPages = data.data.pages;
+                    renderMenus(data.data.records);
+                    renderPagination(data.data.current, data.data.pages, data.data.total);
+                } else {
+                    handleResponse(data, '', '加载失败');
+                }
+            })
+            .catch(err => {
+                console.error('加载菜单失败:', err);
+                showError('加载菜单失败，请重试');
+            });
+        }
+
+        // 渲染菜单表格
+        function renderMenus(menus) {
+            const tbody = document.getElementById('menuTableBody');
+            if (menus.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">暂无菜单</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = menus.map(menu => `
+                <tr>
+                    <td>${menu.id}</td>
+                    <td>${menu.name}</td>
+                    <td>${menu.path || '-'}</td>
+                    <td>${menu.icon ? '<i class="bi bi-' + menu.icon + '"></i>' : '-'}</td>
+                    <td>
+                        <span class="badge ${menu.type === 1 ? 'badge-primary' : 'badge-warning'}">
+                            ${menu.type === 1 ? '菜单' : '按钮'}
+                        </span>
+                    </td>
+                    <td>${menu.sortOrder}</td>
+                    <td><code>${menu.permission || '-'}</code></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editMenu(${menu.id})" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteMenu(${menu.id})" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(current, total, totalCount) {
+            // 更新分页信息
+            const paginationInfo = document.getElementById('paginationInfo');
+            const startRecord = total === 0 ? 0 : (current - 1) * pageSize + 1;
+            const endRecord = Math.min(current * pageSize, totalCount);
+            paginationInfo.innerHTML = `
+                <span class="text-muted">
+                    显示第 <strong>${startRecord}</strong> - <strong>${endRecord}</strong> 条，
+                    共 <strong>${totalCount}</strong> 条数据，
+                    第 <strong>${current}</strong> / <strong>${total}</strong> 页
+                </span>
+            `;
+
+            // 渲染分页按钮
+            const pagination = document.getElementById('pagination');
+            let html = '';
+
+            // 上一页
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadMenus(${current - 1}, currentKeyword); return false;" title="上一页">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>`;
+
+            // 页码
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 2 && i <= current + 2)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadMenus(${i}, currentKeyword); return false;">${i}</a>
+                    </li>`;
+                } else if (i === current - 3 || i === current + 3) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // 下一页
+            html += `<li class="page-item ${current === total || total === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadMenus(${current + 1}, currentKeyword); return false;" title="下一页">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>`;
+
+            pagination.innerHTML = html;
+        }
+
+        // 搜索菜单
+        function searchMenus() {
+            const keyword = document.getElementById('searchInput').value;
+            loadMenus(1, keyword);
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            loadMenus(1, '');
+        }
+
+        // 显示新增模态框
+        function showCreateModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = '新增菜单';
+            document.getElementById('menuForm').reset();
+            document.getElementById('menuId').value = '';
+            document.getElementById('sortOrder').value = '0';
+            setIconValue('');
+            toggleMenuFields();
+            menuModal.show();
+        }
+
+        // 编辑菜单
+        function editMenu(id) {
+            isEditMode = true;
+            const token = localStorage.getItem('token');
+            
+            fetch(`/api/admin/menus/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    const menu = data.data;
+                    document.getElementById('modalTitle').textContent = '编辑菜单';
+                    document.getElementById('menuId').value = menu.id;
+                    document.getElementById('name').value = menu.name;
+                    document.getElementById('type').value = menu.type;
+                    document.getElementById('path').value = menu.path || '';
+                    setIconValue(menu.icon || '');
+                    document.getElementById('permission').value = menu.permission || '';
+                    document.getElementById('component').value = menu.component || '';
+                    document.getElementById('parentId').value = menu.parentId || '';
+                    document.getElementById('sortOrder').value = menu.sortOrder;
+                    toggleMenuFields();
+                    menuModal.show();
+                } else {
+                    handleResponse(data, '', '加载菜单失败');
+                }
+            });
+        }
+
+        // 保存菜单
+        function saveMenu() {
+            const id = document.getElementById('menuId').value;
+            const menuData = {
+                name: document.getElementById('name').value,
+                type: parseInt(document.getElementById('type').value),
+                path: document.getElementById('path').value || null,
+                icon: document.getElementById('icon').value || null,
+                permission: document.getElementById('permission').value || null,
+                component: document.getElementById('component').value || null,
+                parentId: document.getElementById('parentId').value ? parseInt(document.getElementById('parentId').value) : null,
+                sortOrder: parseInt(document.getElementById('sortOrder').value)
+            };
+
+            const token = localStorage.getItem('token');
+            const url = isEditMode ? `/api/admin/menus/${id}` : '/api/admin/menus';
+            const method = isEditMode ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(menuData)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (handleResponse(data, '保存成功', '保存失败')) {
+                    menuModal.hide();
+                    loadMenus(currentPage);
+                }
+            })
+            .catch(err => {
+                console.error('保存失败:', err);
+                showError('保存失败，请重试');
+            });
+        }
+
+        // 删除菜单
+        function deleteMenu(id) {
+            showConfirm('确定要删除该菜单吗？此操作不可恢复！', () => {
+                const token = localStorage.getItem('token');
+                fetch(`/api/admin/menus/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (handleResponse(data, '删除成功', '删除失败')) {
+                        loadMenus(currentPage, currentKeyword);
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

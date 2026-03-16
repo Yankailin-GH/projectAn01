@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色管理 | ProjectAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin-common.css}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部栏 -->
+        <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+        <!-- 侧边栏 -->
+        <aside th:replace="~{fragments/sidebar :: sidebar(activePage='roles')}"></aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content" id="mainContent">
+            <div class="content-wrapper">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2 class="page-title">
+                        <i class="bi bi-shield-check"></i>
+                        角色管理
+                    </h2>
+                    <div class="page-actions">
+                        <a href="/dashboard" class="btn-back">
+                            <i class="bi bi-arrow-left"></i>
+                            返回
+                        </a>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            新增角色
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 角色列表卡片 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 搜索栏 -->
+                        <div class="search-bar">
+                            <input type="text" class="search-input" id="searchInput" placeholder="搜索角色名称或编码...">
+                            <button class="btn btn-primary" onclick="searchRoles()">
+                                <i class="bi bi-search me-2"></i>
+                                搜索
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetSearch()">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                                重置
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>角色名称</th>
+                                        <th>角色编码</th>
+                                        <th>描述</th>
+                                        <th>状态</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roleTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 分页信息和导航 -->
+                        <div class="pagination-wrapper">
+                            <div class="pagination-info" id="paginationInfo">
+                                <span class="text-muted">加载中...</span>
+                            </div>
+                            <nav aria-label="分页导航">
+                                <ul class="pagination" id="pagination">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新增/编辑角色模态框 -->
+    <div class="modal fade" id="roleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">新增角色</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="roleForm">
+                        <input type="hidden" id="roleId">
+                        <div class="mb-3">
+                            <label class="form-label">角色名称 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" required placeholder="例如：管理员">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">角色编码 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="code" required placeholder="例如：ADMIN">
+                            <small class="text-muted">英文大写，用于权限判断</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">描述</label>
+                            <textarea class="form-control" id="description" rows="3" placeholder="角色描述信息"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">状态</label>
+                            <select class="form-select" id="status">
+                                <option value="1">启用</option>
+                                <option value="0">禁用</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveRole()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分配菜单模态框 -->
+    <div class="modal fade" id="menuAssignModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-diagram-3 me-2"></i>分配菜单权限 - <span id="assignRoleName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="menu-assign-toolbar mb-3">
+                        <button class="btn btn-sm btn-outline-primary" onclick="checkAll()">全选</button>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" onclick="uncheckAll()">全不选</button>
+                        <span class="text-muted ms-3" style="font-size:13px">勾选菜单和按钮赋予角色权限</span>
+                    </div>
+                    <div id="menuAssignTree" class="menu-assign-tree"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMenuAssign()"><i class="bi bi-check-lg me-2"></i>保存权限</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/admin-common.js}"></script>
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+        let roleModal;
+        let isEditMode = false;
+        let currentKeyword = '';
+        let totalRecords = 0;
+        let totalPages = 0;
+        let menuAssignModal;
+        let currentAssignRoleId = null;
+        let allMenuTree = [];
+
+        // 初始化模态框
+        document.addEventListener('DOMContentLoaded', function() {
+            roleModal = new bootstrap.Modal(document.getElementById('roleModal'));
+            menuAssignModal = new bootstrap.Modal(document.getElementById('menuAssignModal'));
+            loadRoles(1);
+        });
+
+        // 加载角色列表
+        function loadRoles(page = 1, keyword = '') {
+            currentPage = page;
+            currentKeyword = keyword;
+            const token = localStorage.getItem('token');
+            let url = `/api/admin/roles?page=${page}&size=${pageSize}`;
+            if (keyword) {
+                url += `&keyword=${encodeURIComponent(keyword)}`;
+            }
+            
+            fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    totalRecords = data.data.total;
+                    totalPages = data.data.pages;
+                    renderRoles(data.data.records);
+                    renderPagination(data.data.current, data.data.pages, data.data.total);
+                } else {
+                    handleResponse(data, '', '加载失败');
+                }
+            })
+            .catch(err => {
+                console.error('加载角色失败:', err);
+                showError('加载角色失败，请重试');
+            });
+        }
+
+        // 渲染角色表格
+        function renderRoles(roles) {
+            const tbody = document.getElementById('roleTableBody');
+            if (roles.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无角色</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = roles.map(role => `
+                <tr>
+                    <td>${role.id}</td>
+                    <td>${role.name}</td>
+                    <td><code>${role.code}</code></td>
+                    <td>${role.description || '-'}</td>
+                    <td>
+                        <span class="badge ${role.status === 1 ? 'badge-success' : 'badge-danger'}">
+                            ${role.status === 1 ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td>${formatDate(role.createdAt)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editRole(${role.id})" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="openMenuAssign(${role.id}, '${role.name}')" title="分配菜单">
+                            <i class="bi bi-diagram-3"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteRole(${role.id})" title="删除">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(current, total, totalCount) {
+            // 更新分页信息
+            const paginationInfo = document.getElementById('paginationInfo');
+            const startRecord = total === 0 ? 0 : (current - 1) * pageSize + 1;
+            const endRecord = Math.min(current * pageSize, totalCount);
+            paginationInfo.innerHTML = `
+                <span class="text-muted">
+                    显示第 <strong>${startRecord}</strong> - <strong>${endRecord}</strong> 条，
+                    共 <strong>${totalCount}</strong> 条数据，
+                    第 <strong>${current}</strong> / <strong>${total}</strong> 页
+                </span>
+            `;
+
+            // 渲染分页按钮
+            const pagination = document.getElementById('pagination');
+            let html = '';
+
+            // 上一页
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadRoles(${current - 1}, currentKeyword); return false;" title="上一页">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>`;
+
+            // 页码
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 2 && i <= current + 2)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadRoles(${i}, currentKeyword); return false;">${i}</a>
+                    </li>`;
+                } else if (i === current - 3 || i === current + 3) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // 下一页
+            html += `<li class="page-item ${current === total || total === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadRoles(${current + 1}, currentKeyword); return false;" title="下一页">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>`;
+
+            pagination.innerHTML = html;
+        }
+
+        // 搜索角色
+        function searchRoles() {
+            const keyword = document.getElementById('searchInput').value;
+            loadRoles(1, keyword);
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            loadRoles(1, '');
+        }
+
+        // 显示新增模态框
+        function showCreateModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = '新增角色';
+            document.getElementById('roleForm').reset();
+            document.getElementById('roleId').value = '';
+            roleModal.show();
+        }
+
+        // 编辑角色
+        function editRole(id) {
+            isEditMode = true;
+            const token = localStorage.getItem('token');
+            
+            fetch(`/api/admin/roles/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    const role = data.data;
+                    document.getElementById('modalTitle').textContent = '编辑角色';
+                    document.getElementById('roleId').value = role.id;
+                    document.getElementById('name').value = role.name;
+                    document.getElementById('code').value = role.code;
+                    document.getElementById('description').value = role.description || '';
+                    document.getElementById('status').value = role.status;
+                    roleModal.show();
+                } else {
+                    handleResponse(data, '', '加载角色失败');
+                }
+            });
+        }
+
+        // 保存角色
+        function saveRole() {
+            const id = document.getElementById('roleId').value;
+            const roleData = {
+                name: document.getElementById('name').value,
+                code: document.getElementById('code').value.toUpperCase(),
+                description: document.getElementById('description').value,
+                status: parseInt(document.getElementById('status').value)
+            };
+
+            const token = localStorage.getItem('token');
+            const url = isEditMode ? `/api/admin/roles/${id}` : '/api/admin/roles';
+            const method = isEditMode ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roleData)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (handleResponse(data, '保存成功', '保存失败')) {
+                    roleModal.hide();
+                    loadRoles(currentPage);
+                }
+            })
+            .catch(err => {
+                console.error('保存失败:', err);
+                showError('保存失败，请重试');
+            });
+        }
+
+        // 删除角色
+        function deleteRole(id) {
+            showConfirm('确定要删除该角色吗？此操作不可恢复！', () => {
+                const token = localStorage.getItem('token');
+                fetch(`/api/admin/roles/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (handleResponse(data, '删除成功', '删除失败')) {
+                        loadRoles(currentPage, currentKeyword);
+                    }
+                });
+            });
+        }
+
+        // ==================== 菜单分配 ====================
+
+        // 打开菜单分配面板
+        function openMenuAssign(roleId, roleName) {
+            currentAssignRoleId = roleId;
+            document.getElementById('assignRoleName').textContent = roleName;
+            const token = localStorage.getItem('token');
+
+            // 并行拉取全量菜单树 + 已分配的菜单ID
+            Promise.all([
+                fetch('/api/admin/menus/tree/all', { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+                fetch(`/api/admin/menus/role/${roleId}/ids`, { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json())
+            ]).then(([treeRes, idsRes]) => {
+                if (treeRes.code === 0 && idsRes.code === 0) {
+                    allMenuTree = treeRes.data;
+                    const checkedIds = new Set(idsRes.data);
+                    renderMenuAssignTree(allMenuTree, checkedIds);
+                    menuAssignModal.show();
+                } else {
+                    showError('加载菜单失败');
+                }
+            });
+        }
+
+        // 渲染菜单分配树
+        function renderMenuAssignTree(menus, checkedIds, level = 0) {
+            if (level === 0) {
+                document.getElementById('menuAssignTree').innerHTML =
+                    menus.map(m => renderMenuNode(m, checkedIds, 0)).join('');
+            }
+        }
+
+        function renderMenuNode(menu, checkedIds, level) {
+            const checked = checkedIds.has(menu.id) ? 'checked' : '';
+            const indent = level * 24;
+            const typeTag = menu.type === 2
+                ? `<span class="badge badge-warning ms-1" style="font-size:11px">按钮</span>`
+                : `<span class="badge badge-primary ms-1" style="font-size:11px">菜单</span>`;
+            const iconHtml = menu.icon ? `<i class="bi bi-${menu.icon} me-1"></i>` : '';
+            let html = `
+                <div class="menu-assign-node" style="padding-left:${indent}px">
+                    <label class="menu-assign-label">
+                        <input type="checkbox" class="menu-assign-cb" value="${menu.id}" ${checked}
+                               onchange="onMenuCheckChange(this, ${menu.id})">
+                        ${iconHtml}${menu.name}${typeTag}
+                        ${menu.permission ? `<code class="ms-2" style="font-size:11px">${menu.permission}</code>` : ''}
+                    </label>
+                </div>
+            `;
+            if (menu.children && menu.children.length > 0) {
+                html += menu.children.map(c => renderMenuNode(c, checkedIds, level + 1)).join('');
+            }
+            return html;
+        }
+
+        // 勾选/取消时同步父子关系
+        function onMenuCheckChange(cb, menuId) {
+            // 如果勾选，向上找父节点也勾上
+            if (cb.checked) {
+                syncParentChecked(menuId);
+            } else {
+                // 取消时，把子节点也取消
+                syncChildUnchecked(menuId);
+            }
+        }
+
+        function syncParentChecked(menuId) {
+            // 找出该菜单的父菜单并勾选
+            function findParent(tree, id) {
+                for (const node of tree) {
+                    if (node.children) {
+                        for (const child of node.children) {
+                            if (child.id === id) return node;
+                        }
+                        const found = findParent(node.children, id);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+            const parent = findParent(allMenuTree, menuId);
+            if (parent) {
+                const parentCb = document.querySelector(`.menu-assign-cb[value="${parent.id}"]`);
+                if (parentCb && !parentCb.checked) {
+                    parentCb.checked = true;
+                    syncParentChecked(parent.id);
+                }
+            }
+        }
+
+        function syncChildUnchecked(menuId) {
+            function findNode(tree, id) {
+                for (const node of tree) {
+                    if (node.id === id) return node;
+                    if (node.children) {
+                        const found = findNode(node.children, id);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+            const node = findNode(allMenuTree, menuId);
+            if (node && node.children) {
+                node.children.forEach(child => {
+                    const cb = document.querySelector(`.menu-assign-cb[value="${child.id}"]`);
+                    if (cb) { cb.checked = false; syncChildUnchecked(child.id); }
+                });
+            }
+        }
+
+        function checkAll() {
+            document.querySelectorAll('.menu-assign-cb').forEach(cb => cb.checked = true);
+        }
+
+        function uncheckAll() {
+            document.querySelectorAll('.menu-assign-cb').forEach(cb => cb.checked = false);
+        }
+
+        // 保存菜单分配
+        function saveMenuAssign() {
+            const checkedIds = Array.from(document.querySelectorAll('.menu-assign-cb:checked'))
+                .map(cb => parseInt(cb.value));
+            const token = localStorage.getItem('token');
+            fetch(`/api/admin/roles/${currentAssignRoleId}/menus`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(checkedIds)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (handleResponse(data, '权限分配成功', '分配失败')) {
+                    menuAssignModal.hide();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

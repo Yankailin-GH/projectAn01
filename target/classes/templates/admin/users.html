@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 | ProjectAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/admin-common.css}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部栏 -->
+        <div th:replace="~{fragments/topbar :: topbar}"></div>
+
+        <!-- 侧边栏 -->
+        <aside th:replace="~{fragments/sidebar :: sidebar(activePage='users')}"></aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content" id="mainContent">
+            <div class="content-wrapper">
+                <!-- 页面头部 -->
+                <div class="page-header">
+                    <h2 class="page-title">
+                        <i class="bi bi-people"></i>
+                        用户管理
+                    </h2>
+                    <div class="page-actions">
+                        <a href="/dashboard" class="btn-back">
+                            <i class="bi bi-arrow-left"></i>
+                            返回
+                        </a>
+                        <button class="btn btn-primary" onclick="showCreateModal()">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            新增用户
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 用户列表卡片 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- 搜索栏 -->
+                        <div class="search-bar">
+                            <input type="text" class="search-input" id="searchInput" placeholder="搜索用户名或邮箱...">
+                            <button class="btn btn-primary" onclick="searchUsers()">
+                                <i class="bi bi-search me-2"></i>
+                                搜索
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetSearch()">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                                重置
+                            </button>
+                        </div>
+
+                        <!-- 用户表格 -->
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>用户名</th>
+                                        <th>邮箱</th>
+                                        <th>姓名</th>
+                                        <th>状态</th>
+                                        <th>创建时间</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">加载中...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 分页信息和导航 -->
+                        <div class="pagination-wrapper">
+                            <div class="pagination-info" id="paginationInfo">
+                                <span class="text-muted">加载中...</span>
+                            </div>
+                            <nav aria-label="分页导航">
+                                <ul class="pagination" id="pagination">
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 新增/编辑用户模态框 -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">新增用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="mb-3">
+                            <label class="form-label">用户名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱 <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3" id="passwordGroup">
+                            <label class="form-label">密码 <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">姓名</label>
+                            <input type="text" class="form-control" id="fullName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">手机号</label>
+                            <input type="text" class="form-control" id="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">状态</label>
+                            <select class="form-select" id="status">
+                                <option value="1">启用</option>
+                                <option value="0">禁用</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/admin-common.js}"></script>
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+        let userModal;
+        let isEditMode = false;
+        let currentKeyword = '';
+        let totalRecords = 0;
+        let totalPages = 0;
+
+        // 初始化模态框
+        document.addEventListener('DOMContentLoaded', function() {
+            userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            loadUsers(1);
+        });
+
+        // 加载用户列表
+        function loadUsers(page = 1, keyword = '') {
+            currentPage = page;
+            currentKeyword = keyword;
+            const token = localStorage.getItem('token');
+            let url = `/api/admin/users?page=${page}&size=${pageSize}`;
+            if (keyword) {
+                url += `&keyword=${encodeURIComponent(keyword)}`;
+            }
+
+            fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    totalRecords = data.data.total;
+                    totalPages = data.data.pages;
+                    renderUsers(data.data.records);
+                    renderPagination(data.data.current, data.data.pages, data.data.total);
+                } else {
+                    handleResponse(data, '', '加载失败');
+                }
+            })
+            .catch(err => {
+                console.error('加载用户失败:', err);
+                showError('加载用户失败，请重试');
+            });
+        }
+
+        // 渲染用户表格
+        function renderUsers(users) {
+            const tbody = document.getElementById('userTableBody');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">暂无用户</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.fullName || '-'}</td>
+                    <td>
+                        <span class="badge ${user.status === 1 ? 'badge-success' : 'badge-danger'}">
+                            ${user.status === 1 ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.createdAt)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editUser(${user.id})" title="编辑">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-${user.status === 1 ? 'warning' : 'success'} me-1" 
+                                onclick="toggleUserStatus(${user.id}, ${user.status === 1 ? 0 : 1})" 
+                                title="${user.status === 1 ? '禁用' : '启用'}">
+                            <i class="bi bi-${user.status === 1 ? 'pause' : 'play'}"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" 
+                                onclick="deleteUser(${user.id}, ${user.status})" 
+                                title="删除"
+                                ${user.status === 1 ? 'disabled' : ''}>
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(current, total, totalCount) {
+            // 更新分页信息
+            const paginationInfo = document.getElementById('paginationInfo');
+            const startRecord = total === 0 ? 0 : (current - 1) * pageSize + 1;
+            const endRecord = Math.min(current * pageSize, totalCount);
+            paginationInfo.innerHTML = `
+                <span class="text-muted">
+                    显示第 <strong>${startRecord}</strong> - <strong>${endRecord}</strong> 条，
+                    共 <strong>${totalCount}</strong> 条数据，
+                    第 <strong>${current}</strong> / <strong>${total}</strong> 页
+                </span>
+            `;
+
+            // 渲染分页按钮
+            const pagination = document.getElementById('pagination');
+            let html = '';
+
+            // 上一页
+            html += `<li class="page-item ${current === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadUsers(${current - 1}, currentKeyword); return false;" title="上一页">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>`;
+
+            // 页码
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 2 && i <= current + 2)) {
+                    html += `<li class="page-item ${i === current ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadUsers(${i}, currentKeyword); return false;">${i}</a>
+                    </li>`;
+                } else if (i === current - 3 || i === current + 3) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // 下一页
+            html += `<li class="page-item ${current === total || total === 0 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="loadUsers(${current + 1}, currentKeyword); return false;" title="下一页">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>`;
+
+            pagination.innerHTML = html;
+        }
+
+        // 显示新增模态框
+        function showCreateModal() {
+            isEditMode = false;
+            document.getElementById('modalTitle').textContent = '新增用户';
+            document.getElementById('userForm').reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('passwordGroup').style.display = 'block';
+            document.getElementById('password').required = true;
+            userModal.show();
+        }
+
+        // 编辑用户
+        function editUser(id) {
+            isEditMode = true;
+            const token = localStorage.getItem('token');
+            
+            fetch(`/api/admin/users/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.code === 0) {
+                    const user = data.data;
+                    document.getElementById('modalTitle').textContent = '编辑用户';
+                    document.getElementById('userId').value = user.id;
+                    document.getElementById('username').value = user.username;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('fullName').value = user.fullName || '';
+                    document.getElementById('phone').value = user.phone || '';
+                    document.getElementById('status').value = user.status;
+                    document.getElementById('passwordGroup').style.display = 'none';
+                    document.getElementById('password').required = false;
+                    userModal.show();
+                } else {
+                    handleResponse(data, '', '加载用户失败');
+                }
+            });
+        }
+
+        // 保存用户
+        function saveUser() {
+            const id = document.getElementById('userId').value;
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                status: parseInt(document.getElementById('status').value)
+            };
+
+            if (!isEditMode) {
+                userData.password = document.getElementById('password').value;
+            }
+
+            const token = localStorage.getItem('token');
+            const url = isEditMode ? `/api/admin/users/${id}` : '/api/admin/users';
+            const method = isEditMode ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (handleResponse(data, '保存成功', '保存失败')) {
+                    userModal.hide();
+                    loadUsers(currentPage);
+                }
+            })
+            .catch(err => {
+                console.error('保存失败:', err);
+                showError('保存失败，请重试');
+            });
+        }
+
+        // 启用/禁用用户
+        function toggleUserStatus(id, status) {
+            const action = status === 1 ? '启用' : '禁用';
+            showConfirm(`确定要${action}该用户吗？`, () => {
+                const token = localStorage.getItem('token');
+                fetch(`/api/admin/users/${id}/status?status=${status}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (handleResponse(data, status === 1 ? '用户已启用' : '用户已禁用', '操作失败')) {
+                        loadUsers(currentPage, currentKeyword);
+                    }
+                });
+            });
+        }
+
+        // 删除用户
+        function deleteUser(id, status) {
+            if (status === 1) {
+                showError('启用状态的用户不能删除，请先禁用');
+                return;
+            }
+
+            showConfirm('确定要删除该用户吗？此操作不可恢复！', () => {
+                const token = localStorage.getItem('token');
+                fetch(`/api/admin/users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (handleResponse(data, '删除成功', '删除失败')) {
+                        loadUsers(currentPage, currentKeyword);
+                    }
+                });
+            });
+        }
+
+        // 搜索用户
+        function searchUsers() {
+            const keyword = document.getElementById('searchInput').value;
+            loadUsers(1, keyword);
+        }
+
+        // 重置搜索
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            loadUsers(1, '');
+        }
+
+        // 搜索框回车事件
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUsers();
+            }
+        });
+    </script>
+</body>
+</html>

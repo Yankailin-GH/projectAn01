@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>首页 | ProjectAn01</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/favicon.svg}">
+    <link rel="apple-touch-icon" th:href="@{/images/logo.svg}">
+    <meta name="theme-color" content="#3498db">
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/main.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Hero -->
+<section class="hero-section">
+    <div class="hero-bg-grid"></div>
+    <div class="container">
+        <div class="row align-items-center min-vh-80">
+            <div class="col-lg-6">
+                <div class="hero-badge">Spring Boot 3 + Thymeleaf</div>
+                <h1 class="hero-title">企业级<br/><span class="text-accent">全栈应用</span><br/>开发平台</h1>
+                <p class="hero-subtitle">集成 JWT 认证、JPA、Kafka、Redis、Swagger 的生产级项目脚手架</p>
+                <div class="hero-actions">
+                    <a th:href="@{/products}" class="btn btn-accent btn-lg me-3">
+                        <i class="bi bi-grid me-2"></i>浏览商品
+                    </a>
+                    <a href="/swagger-ui.html" class="btn btn-outline-light btn-lg" target="_blank">
+                        <i class="bi bi-braces me-2"></i>API 文档
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-flex justify-content-end">
+                <div class="hero-code-card">
+                    <div class="code-header">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                        <span class="code-filename">ProjectAn01Application.java</span>
+                    </div>
+                    <pre class="code-body"><span class="kw">@SpringBootApplication</span>
+<span class="kw">@EnableCaching</span>
+<span class="kw">@EnableAsync</span>
+<span class="kw">public class</span> <span class="cn">ProjectAn01Application</span> {
+
+  <span class="kw">public static void</span> main(String[] args) {
+    SpringApplication
+      .run(<span class="cn">ProjectAn01Application</span>
+          .class, args);
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                    <div class="stat-number" th:text="${totalProducts}">0</div>
+                    <div class="stat-label">商品总数</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-shield-check"></i></div>
+                    <div class="stat-number">JWT</div>
+                    <div class="stat-label">身份认证</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-lightning-charge"></i></div>
+                    <div class="stat-number">Redis</div>
+                    <div class="stat-label">缓存加速</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="bi bi-diagram-3"></i></div>
+                    <div class="stat-number">Kafka</div>
+                    <div class="stat-label">消息队列</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section-products">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">精选商品</h2>
+            <a th:href="@{/products}" class="btn-link-arrow">查看全部 <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            <div class="col-sm-6 col-lg-3" th:each="product : ${featuredProducts}">
+                <a th:href="@{/products/{id}(id=${product.id})}" class="product-card-link">
+                    <div class="product-card">
+                        <div class="product-img-wrap">
+                            <img th:src="${product.imageUrl} ?: '/images/placeholder.svg'"
+                                 th:alt="${product.name}" class="product-img"/>
+                            <div class="product-overlay"><i class="bi bi-eye"></i></div>
+                        </div>
+                        <div class="product-body">
+                            <div class="product-category" th:text="${product.category != null} ? ${product.category.name} : '未分类'">分类</div>
+                            <h3 class="product-name" th:text="${product.name}">商品名称</h3>
+                            <div class="product-price">¥<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}">0.00</span></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 text-center" th:if="${#lists.isEmpty(featuredProducts)}">
+                <div class="empty-state">
+                    <i class="bi bi-box-seam"></i>
+                    <p>暂无商品，<a th:href="@{/auth/login}">登录后</a>添加</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tech Stack -->
+<section class="tech-section">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">技术栈一览</h2>
+        <div class="tech-grid">
+            <div class="tech-chip"><i class="bi bi-cup-hot-fill"></i> Java 17</div>
+            <div class="tech-chip"><i class="bi bi-lightning-fill"></i> Spring Boot 3</div>
+            <div class="tech-chip"><i class="bi bi-shield-fill"></i> Spring Security</div>
+            <div class="tech-chip"><i class="bi bi-database-fill"></i> Spring Data JPA</div>
+            <div class="tech-chip"><i class="bi bi-key-fill"></i> JWT</div>
+            <div class="tech-chip"><i class="bi bi-server"></i> MySQL / H2</div>
+            <div class="tech-chip"><i class="bi bi-diagram-3-fill"></i> Kafka</div>
+            <div class="tech-chip"><i class="bi bi-memory"></i> Redis</div>
+            <div class="tech-chip"><i class="bi bi-box-fill"></i> Docker</div>
+            <div class="tech-chip"><i class="bi bi-cloud-fill"></i> Kubernetes</div>
+            <div class="tech-chip"><i class="bi bi-file-earmark-code-fill"></i> Swagger</div>
+            <div class="tech-chip"><i class="bi bi-layers-fill"></i> Thymeleaf</div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/navbar :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
+
