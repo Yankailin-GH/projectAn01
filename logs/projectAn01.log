@@ -1233,3 +1233,83 @@ org.springframework.expression.spel.SpelEvaluationException: EL1004E: Method cal
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 2026-03-16 16:58:25.273 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-03-16 16:58:25.280 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-03-16 19:26:14.614 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-03-16 19:26:14.650 [main] INFO  com.an.ProjectAn01Application - Starting ProjectAn01Application using Java 21.0.8 with PID 70559 (/Users/edy/IdeaProjects/projectAn01/target/classes started by edy in /Users/edy/IdeaProjects/projectAn01)
+2026-03-16 19:26:14.650 [main] DEBUG com.an.ProjectAn01Application - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-03-16 19:26:14.651 [main] INFO  com.an.ProjectAn01Application - The following 1 profile is active: "dev"
+2026-03-16 19:26:16.390 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-03-16 19:26:16.398 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-03-16 19:26:16.400 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-16 19:26:16.400 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-03-16 19:26:16.455 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-03-16 19:26:16.456 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1762 ms
+2026-03-16 19:26:16.914 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.searchUsers] is ignored, because it exists, maybe from xml file
+2026-03-16 19:26:16.914 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.selectByUsernameWithRoles] is ignored, because it exists, maybe from xml file
+2026-03-16 19:26:17.027 [main] DEBUG com.an.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-03-16 19:26:17.789 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-03-16 19:26:17.861 [main] INFO  o.s.security.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@186d6033, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5c0ece6d, org.springframework.security.web.context.SecurityContextHolderFilter@f6bc75c, org.springframework.security.web.header.HeaderWriterFilter@1e6bd367, org.springframework.web.filter.CorsFilter@69419d59, org.springframework.security.web.authentication.logout.LogoutFilter@538f45f1, com.an.security.jwt.JwtAuthenticationFilter@7c69e1e1, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@652a1a17, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@bea283b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@73852720, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7affee54, org.springframework.security.web.session.SessionManagementFilter@3601549f, org.springframework.security.web.access.ExceptionTranslationFilter@456b140f, org.springframework.security.web.access.intercept.AuthorizationFilter@6e355249]
+2026-03-16 19:26:18.338 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-03-16 19:26:18.360 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-03-16 19:26:18.374 [main] INFO  com.an.ProjectAn01Application - Started ProjectAn01Application in 4.342 seconds (process running for 10.429)
+2026-03-16 19:26:18.402 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-16 19:26:18.632 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4e1104f4
+2026-03-16 19:26:18.645 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-16 19:26:18.733 [main] INFO  com.an.util.DataInitializer - 菜单数据已存在，跳过初始化
+2026-03-16 19:26:18.769 [main] INFO  com.an.util.DataInitializer - 角色菜单已分配，跳过
+2026-03-16 19:26:27.619 [http-nio-8080-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-16 19:26:27.620 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-03-16 19:26:27.623 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-03-16 19:26:27.682 [http-nio-8080-exec-1] WARN  o.s.web.servlet.handler.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/auth/login' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-03-16 19:26:32.300 [http-nio-8080-exec-2] WARN  o.s.web.servlet.handler.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/auth/login' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-03-16 19:26:32.819 [http-nio-8080-exec-2] INFO  com.an.service.impl.AuthServiceImpl - 用户登录成功: admin, isAdmin=true, 菜单数量=4
+2026-03-16 19:44:24.717 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=14m35s924ms).
+2026-03-16 19:45:39.520 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-03-16 19:45:39.554 [main] INFO  com.an.ProjectAn01Application - Starting ProjectAn01Application using Java 21.0.8 with PID 70827 (/Users/edy/IdeaProjects/projectAn01/target/classes started by edy in /Users/edy/IdeaProjects/projectAn01)
+2026-03-16 19:45:39.554 [main] DEBUG com.an.ProjectAn01Application - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-03-16 19:45:39.555 [main] INFO  com.an.ProjectAn01Application - The following 1 profile is active: "dev"
+2026-03-16 19:45:41.266 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-03-16 19:45:41.322 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1716 ms
+2026-03-16 19:45:41.701 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.searchUsers] is ignored, because it exists, maybe from xml file
+2026-03-16 19:45:41.701 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.selectByUsernameWithRoles] is ignored, because it exists, maybe from xml file
+2026-03-16 19:45:41.816 [main] DEBUG com.an.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-03-16 19:45:42.491 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-03-16 19:45:42.570 [main] INFO  o.s.security.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@323eecf8, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2e02cc37, org.springframework.security.web.context.SecurityContextHolderFilter@1e6bd367, org.springframework.security.web.header.HeaderWriterFilter@43b45ce4, org.springframework.web.filter.CorsFilter@6e355249, org.springframework.security.web.authentication.logout.LogoutFilter@5c60f096, com.an.security.jwt.JwtAuthenticationFilter@5604b85, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@4b916cc2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3601549f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5b2c7186, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@652a1a17, org.springframework.security.web.session.SessionManagementFilter@1835b783, org.springframework.security.web.access.ExceptionTranslationFilter@4b240276, org.springframework.security.web.access.intercept.AuthorizationFilter@1b10f60e]
+2026-03-16 19:45:42.991 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-03-16 19:45:43.004 [main] INFO  com.an.ProjectAn01Application - Started ProjectAn01Application in 3.904 seconds (process running for 9.683)
+2026-03-16 19:45:43.027 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-16 19:45:43.173 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c6fc278
+2026-03-16 19:45:43.178 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-16 19:45:43.277 [main] INFO  com.an.util.DataInitializer - 菜单数据已存在，跳过初始化
+2026-03-16 19:45:43.299 [main] INFO  com.an.util.DataInitializer - 角色菜单已分配，跳过
+2026-03-16 19:45:54.039 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-03-16 19:45:54.049 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-03-16 19:46:01.196 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-03-16 19:46:01.222 [main] INFO  com.an.ProjectAn01Application - Starting ProjectAn01Application using Java 21.0.8 with PID 70844 (/Users/edy/IdeaProjects/projectAn01/target/classes started by edy in /Users/edy/IdeaProjects/projectAn01)
+2026-03-16 19:46:01.223 [main] DEBUG com.an.ProjectAn01Application - Running with Spring Boot v3.2.0, Spring v6.1.1
+2026-03-16 19:46:01.223 [main] INFO  com.an.ProjectAn01Application - The following 1 profile is active: "dev"
+2026-03-16 19:46:02.616 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-03-16 19:46:02.624 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-03-16 19:46:02.625 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-16 19:46:02.625 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-03-16 19:46:02.672 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-03-16 19:46:02.673 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1412 ms
+2026-03-16 19:46:03.037 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.selectByUsernameWithRoles] is ignored, because it exists, maybe from xml file
+2026-03-16 19:46:03.038 [main] ERROR c.baomidou.mybatisplus.core.MybatisConfiguration - mapper[com.an.mapper.UserMapper.searchUsers] is ignored, because it exists, maybe from xml file
+2026-03-16 19:46:03.160 [main] DEBUG com.an.security.jwt.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-03-16 19:46:03.852 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-03-16 19:46:03.920 [main] INFO  o.s.security.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@96075c0, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2337bf27, org.springframework.security.web.context.SecurityContextHolderFilter@22854f2b, org.springframework.security.web.header.HeaderWriterFilter@1b9c716f, org.springframework.web.filter.CorsFilter@4679554d, org.springframework.security.web.authentication.logout.LogoutFilter@6bd2f039, com.an.security.jwt.JwtAuthenticationFilter@aedc426, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@69419d59, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5ddf5118, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7b9d1a4, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@43719e98, org.springframework.security.web.session.SessionManagementFilter@33f2cf82, org.springframework.security.web.access.ExceptionTranslationFilter@3601549f, org.springframework.security.web.access.intercept.AuthorizationFilter@5c0ece6d]
+2026-03-16 19:46:04.310 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-03-16 19:46:04.329 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2026-03-16 19:46:04.340 [main] INFO  com.an.ProjectAn01Application - Started ProjectAn01Application in 3.546 seconds (process running for 9.351)
+2026-03-16 19:46:04.360 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-16 19:46:04.516 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@180e33b0
+2026-03-16 19:46:04.520 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-16 19:46:04.610 [main] INFO  com.an.util.DataInitializer - 菜单数据已存在，跳过初始化
+2026-03-16 19:46:04.630 [main] INFO  com.an.util.DataInitializer - 角色菜单已分配，跳过
+2026-03-16 19:46:24.644 [http-nio-8080-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-16 19:46:24.644 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-03-16 19:46:24.646 [http-nio-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-03-16 19:46:24.678 [http-nio-8080-exec-1] WARN  o.s.web.servlet.handler.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/admin/users' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-03-16 19:46:24.692 [http-nio-8080-exec-1] WARN  o.s.web.servlet.handler.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/admin/users' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2026-03-16 19:47:58.959 [http-nio-8080-exec-5] INFO  com.an.service.impl.AuthServiceImpl - 用户登录成功: admin, isAdmin=true, 菜单数量=4
+2026-03-16 19:49:43.466 [http-nio-8080-exec-9] INFO  com.an.service.impl.AuthServiceImpl - 用户登录成功: admin, isAdmin=true, 菜单数量=4
